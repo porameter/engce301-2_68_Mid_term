@@ -1,11 +1,11 @@
 
 <!doctype html>
 <html lang="th">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ค้นหาและจองห้องประชุม</title>
-  <style>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ค้นหาและจองห้องประชุม</title>
+    <style>
     :root{
       --bg:#0b1220;
       --card:#101a2f;
@@ -324,158 +324,181 @@
       line-height:1.55;
     }
   </style>
-</head>
+  </head>
 
-<body>
-  <div class="container">
-    <header>
-      <div class="title">
-        <h1>ค้นหาและจองห้องประชุม</h1>
-        <p class="subtitle">เลือกวัน/เวลา กรองจำนวนที่นั่งและสิ่งอำนวยความสะดวก จากนั้นจองผ่านฟอร์มด้านล่างได้ทันที</p>
-      </div>
-      <div class="pill" id="statusPill">สถานะ: พร้อมใช้งาน ✅</div>
-    </header>
-
-    <div class="grid">
-      <!-- Search Form -->
-      <section class="card" aria-labelledby="searchTitle">
-        <div class="card-head">
-          <h2 id="searchTitle">ฟอร์มค้นหา</h2>
-          <span class="muted" style="font-size:12px;">* ต้องกรอก</span>
+  <body>
+    <div class="container">
+      <header>
+        <div class="title">
+          <h1>ค้นหาและจองห้องประชุม</h1>
+          <p class="subtitle">เลือกวัน/เวลา
+            กรองจำนวนที่นั่งและสิ่งอำนวยความสะดวก
+            จากนั้นจองผ่านฟอร์มด้านล่างได้ทันที</p>
         </div>
-        <div class="card-body">
-          <form id="searchForm" novalidate>
-            <div class="row">
-              <div>
-                <label class="req" for="date">วันที่</label>
-                <input id="date" name="date" type="date" required />
-                <div class="helper">เลือกวันที่ต้องการใช้งานห้อง</div>
+        <div class="pill" id="statusPill">สถานะ: พร้อมใช้งาน ✅</div>
+      </header>
+
+      <div class="grid">
+        <!-- Search Form -->
+        <section class="card" aria-labelledby="searchTitle">
+          <div class="card-head">
+            <h2 id="searchTitle">ฟอร์มค้นหา</h2>
+            <span class="muted" style="font-size:12px;">* ต้องกรอก</span>
+          </div>
+          <div class="card-body">
+            <form id="searchForm" novalidate>
+              <div class="row">
+                <div>
+                  <label class="req" for="date">วันที่</label>
+                  <input id="date" name="date" type="date" required />
+                  <div class="helper">เลือกวันที่ต้องการใช้งานห้อง</div>
+                </div>
+                <div>
+                  <label class="req" for="minSeats">จำนวนที่นั่งขั้นต่ำ</label>
+                  <input id="minSeats" name="minSeats" type="number" min="1"
+                    step="1" placeholder="เช่น 10" required />
+                  <div class="helper">ระบบจะค้นหาห้องที่มีความจุ ≥ ค่านี้</div>
+                </div>
               </div>
+
+              <div class="row">
+                <div>
+                  <label class="req" for="startTime">เวลาเริ่ม</label>
+                  <input id="startTime" name="startTime" type="time" required />
+                  <div class="helper">เช่น 09:00</div>
+                </div>
+                <div>
+                  <label class="req" for="endTime">เวลาสิ้นสุด</label>
+                  <input id="endTime" name="endTime" type="time" required />
+                  <div class="helper">ต้องมากกว่าเวลาเริ่ม</div>
+                </div>
+              </div>
+
               <div>
-                <label class="req" for="minSeats">จำนวนที่นั่งขั้นต่ำ</label>
-                <input id="minSeats" name="minSeats" type="number" min="1" step="1" placeholder="เช่น 10" required />
-                <div class="helper">ระบบจะค้นหาห้องที่มีความจุ ≥ ค่านี้</div>
+                <label>สิ่งอำนวยความสะดวก</label>
+                <div class="checks" role="group"
+                  aria-label="สิ่งอำนวยความสะดวก">
+                  <label class="check"><input type="checkbox"
+                      value="Projector" /> โปรเจคเตอร์</label>
+                  <label class="check"><input type="checkbox" value="TV" />
+                    ทีวี</label>
+                  <label class="check"><input type="checkbox"
+                      value="Whiteboard" /> ไวท์บอร์ด</label>
+                  <label class="check"><input type="checkbox"
+                      value="VideoConf" /> วิดีโอคอนเฟอเรนซ์</label>
+                  <label class="check"><input type="checkbox"
+                      value="Speakerphone" /> สปีกเกอร์โฟน</label>
+                  <label class="check"><input type="checkbox" value="AC" />
+                    แอร์</label>
+                </div>
+                <div class="helper">ติ๊กหลายรายการได้
+                  (ห้องต้องมีครบตามที่เลือก)</div>
+              </div>
+
+              <div class="actions">
+                <button id="searchBtn" type="submit">ค้นหา</button>
+                <button id="resetBtn" class="secondary"
+                  type="button">ล้างค่า</button>
+              </div>
+
+              <div id="searchAlert" class="alert error"
+                aria-live="polite"></div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Results -->
+        <section class="card" aria-labelledby="resultsTitle">
+          <div class="card-head">
+            <h2 id="resultsTitle">ตารางแสดงผล</h2>
+            <span class="muted" id="resultCount"
+              style="font-size:12px;">ยังไม่มีผลลัพธ์</span>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap" aria-live="polite">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ชื่อห้อง</th>
+                    <th>ตึก</th>
+                    <th>ชั้น</th>
+                    <th>ความจุ</th>
+                    <th>สิ่งอำนวยความสะดวก</th>
+                    <th>การทำรายการ</th>
+                  </tr>
+                </thead>
+                <tbody id="resultsBody">
+                  <tr>
+                    <td colspan="6" class="muted">กรอกเงื่อนไข แล้วกด “ค้นหา”
+                      เพื่อแสดงรายการห้องที่ว่าง</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="globalMsg" class="alert success" aria-live="polite"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal-backdrop" id="modalBackdrop" role="dialog"
+      aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal">
+        <div class="modal-head">
+          <h3 id="modalTitle">จองห้องประชุม</h3>
+          <button class="close" type="button" id="closeModalBtn"
+            aria-label="ปิด">ปิด ✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="kv" id="roomSummary"></div>
+
+          <div class="divider"></div>
+
+          <form id="bookingForm" novalidate>
+            <div class="row">
+              <div style="grid-column: 1 / -1;">
+                <label class="req" for="purpose">วัตถุประสงค์</label>
+                <textarea id="purpose" required
+                  placeholder="เช่น ประชุมทีมประจำสัปดาห์ / สัมภาษณ์ผู้สมัคร / Present งาน"></textarea>
+                <div class="helper">กรอกเหตุผลหรือหัวข้อการใช้งานห้อง</div>
               </div>
             </div>
 
             <div class="row">
               <div>
-                <label class="req" for="startTime">เวลาเริ่ม</label>
-                <input id="startTime" name="startTime" type="time" required />
-                <div class="helper">เช่น 09:00</div>
+                <label class="req" for="attendees">จำนวนผู้เข้าร่วม</label>
+                <input id="attendees" type="number" min="1" step="1"
+                  placeholder="เช่น 8" required />
+                <div class="helper" id="capHint">ต้องไม่เกินความจุห้อง</div>
               </div>
               <div>
-                <label class="req" for="endTime">เวลาสิ้นสุด</label>
-                <input id="endTime" name="endTime" type="time" required />
-                <div class="helper">ต้องมากกว่าเวลาเริ่ม</div>
+                <label>ช่วงเวลา (อ้างอิงจากการค้นหา)</label>
+                <input id="timeReadonly" type="text" readonly />
+                <div class="helper">หากต้องการแก้เวลา ให้ปิดหน้าต่าง
+                  แล้วค้นหาใหม่</div>
               </div>
-            </div>
-
-            <div>
-              <label>สิ่งอำนวยความสะดวก</label>
-              <div class="checks" role="group" aria-label="สิ่งอำนวยความสะดวก">
-                <label class="check"><input type="checkbox" value="Projector" /> โปรเจคเตอร์</label>
-                <label class="check"><input type="checkbox" value="TV" /> ทีวี</label>
-                <label class="check"><input type="checkbox" value="Whiteboard" /> ไวท์บอร์ด</label>
-                <label class="check"><input type="checkbox" value="VideoConf" /> วิดีโอคอนเฟอเรนซ์</label>
-                <label class="check"><input type="checkbox" value="Speakerphone" /> สปีกเกอร์โฟน</label>
-                <label class="check"><input type="checkbox" value="AC" /> แอร์</label>
-              </div>
-              <div class="helper">ติ๊กหลายรายการได้ (ห้องต้องมีครบตามที่เลือก)</div>
             </div>
 
             <div class="actions">
-              <button id="searchBtn" type="submit">ค้นหา</button>
-              <button id="resetBtn" class="secondary" type="button">ล้างค่า</button>
+              <button class="success" id="confirmBtn"
+                type="submit">ยืนยันการจอง</button>
+              <button class="secondary" type="button"
+                id="cancelBtn">ยกเลิก</button>
             </div>
 
-            <div id="searchAlert" class="alert error" aria-live="polite"></div>
+            <div id="bookingAlert" class="alert error" aria-live="polite"></div>
           </form>
-        </div>
-      </section>
 
-      <!-- Results -->
-      <section class="card" aria-labelledby="resultsTitle">
-        <div class="card-head">
-          <h2 id="resultsTitle">ตารางแสดงผล</h2>
-          <span class="muted" id="resultCount" style="font-size:12px;">ยังไม่มีผลลัพธ์</span>
-        </div>
-        <div class="card-body">
-          <div class="table-wrap" aria-live="polite">
-            <table>
-              <thead>
-                <tr>
-                  <th>ชื่อห้อง</th>
-                  <th>ตึก</th>
-                  <th>ชั้น</th>
-                  <th>ความจุ</th>
-                  <th>สิ่งอำนวยความสะดวก</th>
-                  <th>การทำรายการ</th>
-                </tr>
-              </thead>
-              <tbody id="resultsBody">
-                <tr>
-                  <td colspan="6" class="muted">กรอกเงื่อนไข แล้วกด “ค้นหา” เพื่อแสดงรายการห้องที่ว่าง</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="footer-note">
+            หมายเหตุ: หน้านี้ใช้ Mock Data และเก็บการจองแบบหน่วยความจำ
+            (in-memory) เพื่อเดโมเงื่อนไข “ห้องว่าง”
           </div>
-          <div id="globalMsg" class="alert success" aria-live="polite"></div>
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <!-- Booking Modal -->
-  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal">
-      <div class="modal-head">
-        <h3 id="modalTitle">จองห้องประชุม</h3>
-        <button class="close" type="button" id="closeModalBtn" aria-label="ปิด">ปิด ✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="kv" id="roomSummary"></div>
-
-        <div class="divider"></div>
-
-        <form id="bookingForm" novalidate>
-          <div class="row">
-            <div style="grid-column: 1 / -1;">
-              <label class="req" for="purpose">วัตถุประสงค์</label>
-              <textarea id="purpose" required placeholder="เช่น ประชุมทีมประจำสัปดาห์ / สัมภาษณ์ผู้สมัคร / Present งาน"></textarea>
-              <div class="helper">กรอกเหตุผลหรือหัวข้อการใช้งานห้อง</div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label class="req" for="attendees">จำนวนผู้เข้าร่วม</label>
-              <input id="attendees" type="number" min="1" step="1" placeholder="เช่น 8" required />
-              <div class="helper" id="capHint">ต้องไม่เกินความจุห้อง</div>
-            </div>
-            <div>
-              <label>ช่วงเวลา (อ้างอิงจากการค้นหา)</label>
-              <input id="timeReadonly" type="text" readonly />
-              <div class="helper">หากต้องการแก้เวลา ให้ปิดหน้าต่าง แล้วค้นหาใหม่</div>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button class="success" id="confirmBtn" type="submit">ยืนยันการจอง</button>
-            <button class="secondary" type="button" id="cancelBtn">ยกเลิก</button>
-          </div>
-
-          <div id="bookingAlert" class="alert error" aria-live="polite"></div>
-        </form>
-
-        <div class="footer-note">
-          หมายเหตุ: หน้านี้ใช้ Mock Data และเก็บการจองแบบหน่วยความจำ (in-memory) เพื่อเดโมเงื่อนไข “ห้องว่าง”
         </div>
       </div>
     </div>
-  </div>
 
-  <script>
+    <script>
     // -----------------------------
     // Mock Data
     // -----------------------------
@@ -864,5 +887,5 @@
     // init
     setTodayDefault();
   </script>
-</body>
+  </body>
 </html>
