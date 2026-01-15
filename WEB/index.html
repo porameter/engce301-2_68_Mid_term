@@ -1,0 +1,868 @@
+
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ค้นหาและจองห้องประชุม</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#101a2f;
+      --muted:#93a4c7;
+      --text:#eaf0ff;
+      --primary:#6ea8fe;
+      --primary2:#4dd4ac;
+      --danger:#ff6b6b;
+      --warning:#ffd166;
+      --border: rgba(255,255,255,.10);
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --radius: 16px;
+      --focus: 0 0 0 4px rgba(110,168,254,.25);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai", "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background: radial-gradient(1000px 600px at 20% 0%, rgba(110,168,254,.15), transparent),
+                  radial-gradient(900px 500px at 95% 10%, rgba(77,212,172,.12), transparent),
+                  var(--bg);
+      color: var(--text);
+      min-height:100vh;
+    }
+    a{color:inherit}
+    .container{
+      width:min(1100px, 92vw);
+      margin: 28px auto 40px;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    h1{
+      margin:0;
+      font-size: clamp(22px, 3vw, 30px);
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      margin:0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height:1.5;
+    }
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 8px 12px;
+      border:1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,.04);
+      font-size: 13px;
+      white-space:nowrap;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+    }
+    @media (max-width: 920px){
+      .grid{grid-template-columns: 1fr;}
+      header{flex-direction:column; align-items:flex-start;}
+    }
+
+    .card{
+      background: rgba(16,26,47,.72);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-head{
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      background: rgba(255,255,255,.03);
+    }
+    .card-head h2{
+      margin:0;
+      font-size: 16px;
+    }
+    .card-body{padding: 16px;}
+
+    /* Form */
+    form .row{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 640px){
+      form .row{grid-template-columns: 1fr;}
+    }
+
+    label{
+      display:block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .req::after{content:" *"; color: var(--warning); font-weight:700;}
+    input[type="date"],
+    input[type="time"],
+    input[type="number"],
+    textarea{
+      width:100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline:none;
+    }
+    input:focus, textarea:focus{
+      box-shadow: var(--focus);
+      border-color: rgba(110,168,254,.55);
+    }
+    textarea{min-height: 92px; resize: vertical;}
+    .helper{
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .checks{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px 14px;
+      padding: 10px 0 2px;
+    }
+    .check{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      padding: 8px 10px;
+      border-radius: 999px;
+      user-select:none;
+      cursor:pointer;
+    }
+    .check input{accent-color: var(--primary2);}
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    button{
+      border:0;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      color: #081226;
+      background: linear-gradient(135deg, var(--primary), #9ac2ff);
+      transition: transform .05s ease, filter .2s ease;
+    }
+    button:active{transform: translateY(1px);}
+    button.secondary{
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+    button.success{
+      background: linear-gradient(135deg, var(--primary2), #7af1d1);
+      color:#062014;
+    }
+    button:disabled{
+      filter: grayscale(70%);
+      opacity:.6;
+      cursor:not-allowed;
+    }
+
+    /* Alerts */
+    .alert{
+      margin-top: 12px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      display:none;
+    }
+    .alert.error{
+      display:block;
+      border-color: rgba(255,107,107,.45);
+      background: rgba(255,107,107,.08);
+    }
+    .alert.success{
+      display:block;
+      border-color: rgba(77,212,172,.45);
+      background: rgba(77,212,172,.08);
+    }
+    .alert ul{margin:8px 0 0 18px;}
+    .muted{color:var(--muted);}
+
+    /* Table */
+    .table-wrap{
+      overflow:auto;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width: 740px;
+      background: rgba(0,0,0,.12);
+    }
+    th, td{
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      vertical-align:top;
+      font-size: 14px;
+    }
+    th{
+      text-align:left;
+      color: var(--muted);
+      font-weight: 700;
+      background: rgba(255,255,255,.03);
+    }
+    tr:hover td{background: rgba(255,255,255,.03);}
+    .tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 6px;
+    }
+    .tag{
+      font-size: 12px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+    }
+    .tag.dim{color: var(--muted);}
+
+    .btn-small{
+      padding: 9px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      white-space:nowrap;
+    }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 16px;
+      z-index: 50;
+    }
+    .modal{
+      width: min(640px, 96vw);
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(16,26,47,.92);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modal-head{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 12px;
+      background: rgba(255,255,255,.03);
+    }
+    .modal-head h3{margin:0; font-size: 16px;}
+    .close{
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.16);
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+    .modal-body{padding: 16px;}
+    .kv{
+      display:grid;
+      grid-template-columns: 140px 1fr;
+      gap: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    @media (max-width: 560px){
+      .kv{grid-template-columns: 1fr;}
+    }
+    .k{color: var(--muted);}
+    .v{font-family: var(--mono); font-size: 13px;}
+    .divider{
+      height:1px; background: rgba(255,255,255,.10);
+      margin: 12px 0;
+    }
+    .footer-note{
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height:1.55;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="title">
+        <h1>ค้นหาและจองห้องประชุม</h1>
+        <p class="subtitle">เลือกวัน/เวลา กรองจำนวนที่นั่งและสิ่งอำนวยความสะดวก จากนั้นจองผ่านฟอร์มด้านล่างได้ทันที</p>
+      </div>
+      <div class="pill" id="statusPill">สถานะ: พร้อมใช้งาน ✅</div>
+    </header>
+
+    <div class="grid">
+      <!-- Search Form -->
+      <section class="card" aria-labelledby="searchTitle">
+        <div class="card-head">
+          <h2 id="searchTitle">ฟอร์มค้นหา</h2>
+          <span class="muted" style="font-size:12px;">* ต้องกรอก</span>
+        </div>
+        <div class="card-body">
+          <form id="searchForm" novalidate>
+            <div class="row">
+              <div>
+                <label class="req" for="date">วันที่</label>
+                <input id="date" name="date" type="date" required />
+                <div class="helper">เลือกวันที่ต้องการใช้งานห้อง</div>
+              </div>
+              <div>
+                <label class="req" for="minSeats">จำนวนที่นั่งขั้นต่ำ</label>
+                <input id="minSeats" name="minSeats" type="number" min="1" step="1" placeholder="เช่น 10" required />
+                <div class="helper">ระบบจะค้นหาห้องที่มีความจุ ≥ ค่านี้</div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label class="req" for="startTime">เวลาเริ่ม</label>
+                <input id="startTime" name="startTime" type="time" required />
+                <div class="helper">เช่น 09:00</div>
+              </div>
+              <div>
+                <label class="req" for="endTime">เวลาสิ้นสุด</label>
+                <input id="endTime" name="endTime" type="time" required />
+                <div class="helper">ต้องมากกว่าเวลาเริ่ม</div>
+              </div>
+            </div>
+
+            <div>
+              <label>สิ่งอำนวยความสะดวก</label>
+              <div class="checks" role="group" aria-label="สิ่งอำนวยความสะดวก">
+                <label class="check"><input type="checkbox" value="Projector" /> โปรเจคเตอร์</label>
+                <label class="check"><input type="checkbox" value="TV" /> ทีวี</label>
+                <label class="check"><input type="checkbox" value="Whiteboard" /> ไวท์บอร์ด</label>
+                <label class="check"><input type="checkbox" value="VideoConf" /> วิดีโอคอนเฟอเรนซ์</label>
+                <label class="check"><input type="checkbox" value="Speakerphone" /> สปีกเกอร์โฟน</label>
+                <label class="check"><input type="checkbox" value="AC" /> แอร์</label>
+              </div>
+              <div class="helper">ติ๊กหลายรายการได้ (ห้องต้องมีครบตามที่เลือก)</div>
+            </div>
+
+            <div class="actions">
+              <button id="searchBtn" type="submit">ค้นหา</button>
+              <button id="resetBtn" class="secondary" type="button">ล้างค่า</button>
+            </div>
+
+            <div id="searchAlert" class="alert error" aria-live="polite"></div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section class="card" aria-labelledby="resultsTitle">
+        <div class="card-head">
+          <h2 id="resultsTitle">ตารางแสดงผล</h2>
+          <span class="muted" id="resultCount" style="font-size:12px;">ยังไม่มีผลลัพธ์</span>
+        </div>
+        <div class="card-body">
+          <div class="table-wrap" aria-live="polite">
+            <table>
+              <thead>
+                <tr>
+                  <th>ชื่อห้อง</th>
+                  <th>ตึก</th>
+                  <th>ชั้น</th>
+                  <th>ความจุ</th>
+                  <th>สิ่งอำนวยความสะดวก</th>
+                  <th>การทำรายการ</th>
+                </tr>
+              </thead>
+              <tbody id="resultsBody">
+                <tr>
+                  <td colspan="6" class="muted">กรอกเงื่อนไข แล้วกด “ค้นหา” เพื่อแสดงรายการห้องที่ว่าง</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="globalMsg" class="alert success" aria-live="polite"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="modalTitle">จองห้องประชุม</h3>
+        <button class="close" type="button" id="closeModalBtn" aria-label="ปิด">ปิด ✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="kv" id="roomSummary"></div>
+
+        <div class="divider"></div>
+
+        <form id="bookingForm" novalidate>
+          <div class="row">
+            <div style="grid-column: 1 / -1;">
+              <label class="req" for="purpose">วัตถุประสงค์</label>
+              <textarea id="purpose" required placeholder="เช่น ประชุมทีมประจำสัปดาห์ / สัมภาษณ์ผู้สมัคร / Present งาน"></textarea>
+              <div class="helper">กรอกเหตุผลหรือหัวข้อการใช้งานห้อง</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label class="req" for="attendees">จำนวนผู้เข้าร่วม</label>
+              <input id="attendees" type="number" min="1" step="1" placeholder="เช่น 8" required />
+              <div class="helper" id="capHint">ต้องไม่เกินความจุห้อง</div>
+            </div>
+            <div>
+              <label>ช่วงเวลา (อ้างอิงจากการค้นหา)</label>
+              <input id="timeReadonly" type="text" readonly />
+              <div class="helper">หากต้องการแก้เวลา ให้ปิดหน้าต่าง แล้วค้นหาใหม่</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="success" id="confirmBtn" type="submit">ยืนยันการจอง</button>
+            <button class="secondary" type="button" id="cancelBtn">ยกเลิก</button>
+          </div>
+
+          <div id="bookingAlert" class="alert error" aria-live="polite"></div>
+        </form>
+
+        <div class="footer-note">
+          หมายเหตุ: หน้านี้ใช้ Mock Data และเก็บการจองแบบหน่วยความจำ (in-memory) เพื่อเดโมเงื่อนไข “ห้องว่าง”
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------
+    // Mock Data
+    // -----------------------------
+    const ROOMS = [
+      { id: 1, name: "Suthep A", building: "A", floor: 3, capacity: 8,  amenities: ["TV", "Whiteboard", "AC"] },
+      { id: 2, name: "Nimman 201", building: "B", floor: 2, capacity: 12, amenities: ["Projector", "Whiteboard", "AC"] },
+      { id: 3, name: "Ping River", building: "C", floor: 5, capacity: 20, amenities: ["Projector", "VideoConf", "Speakerphone", "AC"] },
+      { id: 4, name: "Doi Inthanon", building: "A", floor: 6, capacity: 30, amenities: ["TV", "Projector", "VideoConf", "Whiteboard", "Speakerphone", "AC"] },
+      { id: 5, name: "Old City", building: "B", floor: 1, capacity: 6,  amenities: ["Whiteboard", "AC"] },
+      { id: 6, name: "Mae Sa", building: "C", floor: 4, capacity: 16, amenities: ["TV", "Projector", "Whiteboard", "AC"] },
+    ];
+
+    // In-memory bookings (เดโม)
+    // { roomId, date:"YYYY-MM-DD", start:"HH:MM", end:"HH:MM", purpose, attendees }
+    const BOOKINGS = [
+      { roomId: 2, date: "2026-01-15", start: "10:00", end: "11:30", purpose:"ประชุมแผนงาน", attendees: 8 },
+      { roomId: 4, date: "2026-01-15", start: "13:00", end: "15:00", purpose:"Present โปรเจกต์", attendees: 18 },
+    ];
+
+    // -----------------------------
+    // DOM refs
+    // -----------------------------
+    const searchForm = document.getElementById("searchForm");
+    const dateEl = document.getElementById("date");
+    const startEl = document.getElementById("startTime");
+    const endEl = document.getElementById("endTime");
+    const minSeatsEl = document.getElementById("minSeats");
+    const resultsBody = document.getElementById("resultsBody");
+    const resultCount = document.getElementById("resultCount");
+    const searchAlert = document.getElementById("searchAlert");
+    const resetBtn = document.getElementById("resetBtn");
+    const globalMsg = document.getElementById("globalMsg");
+    const statusPill = document.getElementById("statusPill");
+
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const bookingForm = document.getElementById("bookingForm");
+    const roomSummary = document.getElementById("roomSummary");
+    const purposeEl = document.getElementById("purpose");
+    const attendeesEl = document.getElementById("attendees");
+    const timeReadonlyEl = document.getElementById("timeReadonly");
+    const capHint = document.getElementById("capHint");
+    const bookingAlert = document.getElementById("bookingAlert");
+
+    // State (ค่าการค้นหาล่าสุด + ห้องที่เลือก)
+    const state = {
+      lastSearch: null, // {date,start,end,minSeats,amenities[]}
+      selectedRoom: null
+    };
+
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    const pad2 = n => String(n).padStart(2, "0");
+
+    function setTodayDefault(){
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = pad2(now.getMonth()+1);
+      const dd = pad2(now.getDate());
+      if (!dateEl.value) dateEl.value = `${yyyy}-${mm}-${dd}`;
+      if (!startEl.value) startEl.value = "09:00";
+      if (!endEl.value) endEl.value = "10:00";
+      if (!minSeatsEl.value) minSeatsEl.value = 1;
+    }
+
+    function timeToMinutes(t){
+      const [h,m] = t.split(":").map(Number);
+      return h*60 + m;
+    }
+
+    function overlaps(aStart, aEnd, bStart, bEnd){
+      // overlap if start < otherEnd and end > otherStart
+      return aStart < bEnd && aEnd > bStart;
+    }
+
+    function getCheckedAmenities(){
+      return [...document.querySelectorAll('.checks input[type="checkbox"]:checked')].map(x => x.value);
+    }
+
+    function hasAllAmenities(roomAmenities, requiredAmenities){
+      return requiredAmenities.every(a => roomAmenities.includes(a));
+    }
+
+    function isRoomAvailable(roomId, date, start, end){
+      const s = timeToMinutes(start);
+      const e = timeToMinutes(end);
+      const sameDay = BOOKINGS.filter(b => b.roomId === roomId && b.date === date);
+      return !sameDay.some(b => overlaps(s, e, timeToMinutes(b.start), timeToMinutes(b.end)));
+    }
+
+    function clearAlert(el){
+      el.classList.remove("error","success");
+      el.style.display = "none";
+      el.innerHTML = "";
+    }
+
+    function showErrors(el, errors){
+      el.classList.remove("success");
+      el.classList.add("error");
+      el.style.display = "block";
+      el.innerHTML = `
+        <strong>ตรวจสอบข้อมูลไม่ผ่าน</strong>
+        <ul>${errors.map(e => `<li>${e}</li>`).join("")}</ul>
+      `;
+    }
+
+    function showSuccess(el, message){
+      el.classList.remove("error");
+      el.classList.add("success");
+      el.style.display = "block";
+      el.innerHTML = `<strong>${message}</strong>`;
+    }
+
+    function setStatus(text, ok=true){
+      statusPill.textContent = `สถานะ: ${text}`;
+      statusPill.style.borderColor = ok ? "rgba(77,212,172,.35)" : "rgba(255,107,107,.35)";
+    }
+
+    function sanitize(str){
+      return String(str).replace(/[&<>"']/g, s => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[s]));
+    }
+
+    // -----------------------------
+    // Render Results
+    // -----------------------------
+    function renderResults(rooms){
+      if (!rooms.length){
+        resultsBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="muted">ไม่พบห้องว่างตามเงื่อนไขที่เลือก (ลองลดจำนวนที่นั่ง หรือปรับเวลา)</td>
+          </tr>
+        `;
+        resultCount.textContent = "0 รายการ";
+        return;
+      }
+
+      resultsBody.innerHTML = rooms.map(r => {
+        const tags = r.amenities.map(a => `<span class="tag">${sanitize(a)}</span>`).join("");
+        return `
+          <tr>
+            <td><strong>${sanitize(r.name)}</strong></td>
+            <td>${sanitize(r.building)}</td>
+            <td>${sanitize(r.floor)}</td>
+            <td>${sanitize(r.capacity)}</td>
+            <td><div class="tags">${tags}</div></td>
+            <td>
+              <button class="btn-small success" data-book="${r.id}">จอง</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      resultCount.textContent = `${rooms.length} รายการ`;
+      // bind events for booking buttons
+      [...resultsBody.querySelectorAll("[data-book]")].forEach(btn => {
+        btn.addEventListener("click", () => openBookingModal(Number(btn.dataset.book)));
+      });
+    }
+
+    // -----------------------------
+    // Search Validation & Logic
+    // -----------------------------
+    function validateSearch(){
+      const errors = [];
+      const date = dateEl.value;
+      const start = startEl.value;
+      const end = endEl.value;
+      const minSeats = Number(minSeatsEl.value);
+      const amenities = getCheckedAmenities();
+
+      if (!date) errors.push("กรุณาเลือกวันที่");
+      if (!start) errors.push("กรุณาเลือกเวลาเริ่ม");
+      if (!end) errors.push("กรุณาเลือกเวลาสิ้นสุด");
+      if (!minSeatsEl.value) errors.push("กรุณากรอกจำนวนที่นั่งขั้นต่ำ");
+      if (minSeatsEl.value && (isNaN(minSeats) || minSeats < 1)) errors.push("จำนวนที่นั่งขั้นต่ำต้องเป็นตัวเลข ≥ 1");
+
+      if (start && end){
+        if (timeToMinutes(end) <= timeToMinutes(start)){
+          errors.push("เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม");
+        }
+      }
+
+      return { ok: errors.length === 0, errors, data: { date, start, end, minSeats, amenities } };
+    }
+
+    function doSearch(){
+      clearAlert(searchAlert);
+      clearAlert(globalMsg);
+      setStatus("กำลังค้นหา…", true);
+
+      const v = validateSearch();
+      if (!v.ok){
+        showErrors(searchAlert, v.errors);
+        setStatus("ข้อมูลค้นหาไม่ถูกต้อง ❌", false);
+        return;
+      }
+
+      state.lastSearch = v.data;
+
+      // filter
+      const { date, start, end, minSeats, amenities } = v.data;
+      const results = ROOMS
+        .filter(r => r.capacity >= minSeats)
+        .filter(r => hasAllAmenities(r.amenities, amenities))
+        .filter(r => isRoomAvailable(r.id, date, start, end));
+
+      renderResults(results);
+      setStatus("ค้นหาเสร็จสิ้น ✅", true);
+    }
+
+    // -----------------------------
+    // Modal: open/close
+    // -----------------------------
+    function openModal(){
+      modalBackdrop.style.display = "flex";
+      document.body.style.overflow = "hidden";
+      // focus first input
+      setTimeout(() => purposeEl.focus(), 0);
+    }
+    function closeModal(){
+      modalBackdrop.style.display = "none";
+      document.body.style.overflow = "";
+      state.selectedRoom = null;
+      bookingForm.reset();
+      clearAlert(bookingAlert);
+    }
+
+    function openBookingModal(roomId){
+      clearAlert(globalMsg);
+
+      if (!state.lastSearch){
+        showErrors(globalMsg, ["กรุณาค้นหาห้องก่อน แล้วจึงกดปุ่มจอง"]);
+        return;
+      }
+
+      const room = ROOMS.find(r => r.id === roomId);
+      if (!room) return;
+
+      // Re-check availability (เผื่อมีคนจองเพิ่มระหว่างนั้น)
+      const { date, start, end } = state.lastSearch;
+      if (!isRoomAvailable(roomId, date, start, end)){
+        showErrors(globalMsg, ["ห้องนี้ไม่ว่างแล้วในช่วงเวลาที่เลือก กรุณาค้นหาใหม่"]);
+        doSearch();
+        return;
+      }
+
+      state.selectedRoom = room;
+
+      // render summary
+      roomSummary.innerHTML = `
+        <div class="k">ห้อง</div><div class="v">${sanitize(room.name)}</div>
+        <div class="k">ตึก/ชั้น</div><div class="v">${sanitize(room.building)} / ${sanitize(room.floor)}</div>
+        <div class="k">ความจุ</div><div class="v">${sanitize(room.capacity)} ที่นั่ง</div>
+        <div class="k">สิ่งอำนวยความสะดวก</div>
+        <div class="v">${room.amenities.map(a=>`[${sanitize(a)}]`).join(" ")}</div>
+        <div class="k">วัน/เวลา</div>
+        <div class="v">${sanitize(date)} ${sanitize(start)}–${sanitize(end)}</div>
+      `;
+
+      timeReadonlyEl.value = `${date} ${start}–${end}`;
+      capHint.textContent = `ต้องไม่เกินความจุห้อง (${room.capacity} คน)`;
+      attendeesEl.max = String(room.capacity);
+
+      openModal();
+    }
+
+    // -----------------------------
+    // Booking Validation & Confirm
+    // -----------------------------
+    function validateBooking(){
+      const errors = [];
+      const room = state.selectedRoom;
+      const search = state.lastSearch;
+
+      if (!room) errors.push("ไม่พบข้อมูลห้องที่เลือก");
+      if (!search) errors.push("ไม่พบข้อมูลการค้นหา");
+
+      const purpose = purposeEl.value.trim();
+      const attendees = Number(attendeesEl.value);
+
+      if (!purpose) errors.push("กรุณากรอกวัตถุประสงค์");
+      if (!attendeesEl.value) errors.push("กรุณากรอกจำนวนผู้เข้าร่วม");
+      if (attendeesEl.value && (isNaN(attendees) || attendees < 1)) errors.push("จำนวนผู้เข้าร่วมต้องเป็นตัวเลข ≥ 1");
+      if (room && attendeesEl.value && attendees > room.capacity) errors.push("จำนวนผู้เข้าร่วมต้องไม่เกินความจุห้อง");
+
+      // Re-check time validity (safety)
+      if (search?.start && search?.end && timeToMinutes(search.end) <= timeToMinutes(search.start)){
+        errors.push("ช่วงเวลาไม่ถูกต้อง (เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม)");
+      }
+
+      // Re-check availability (กันชน)
+      if (room && search && !isRoomAvailable(room.id, search.date, search.start, search.end)){
+        errors.push("ไม่สามารถจองได้: ห้องไม่ว่างแล้วในช่วงเวลานี้");
+      }
+
+      return { ok: errors.length === 0, errors, data: { purpose, attendees } };
+    }
+
+    function confirmBooking(){
+      clearAlert(bookingAlert);
+
+      const v = validateBooking();
+      if (!v.ok){
+        showErrors(bookingAlert, v.errors);
+        setStatus("จองไม่สำเร็จ ❌", false);
+        return;
+      }
+
+      const room = state.selectedRoom;
+      const search = state.lastSearch;
+
+      // Save booking
+      BOOKINGS.push({
+        roomId: room.id,
+        date: search.date,
+        start: search.start,
+        end: search.end,
+        purpose: v.data.purpose,
+        attendees: v.data.attendees
+      });
+
+      closeModal();
+      showSuccess(globalMsg, `จองสำเร็จ ✅ ห้อง "${room.name}" วันที่ ${search.date} เวลา ${search.start}–${search.end}`);
+      setStatus("จองสำเร็จ ✅", true);
+
+      // Refresh results after booking (so the room disappears if searched same criteria)
+      doSearch();
+      // auto-hide success message
+      setTimeout(() => clearAlert(globalMsg), 4500);
+    }
+
+    // -----------------------------
+    // Events
+    // -----------------------------
+    searchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      doSearch();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      searchForm.reset();
+      // clear checkboxes
+      [...document.querySelectorAll('.checks input[type="checkbox"]')].forEach(x => x.checked = false);
+      clearAlert(searchAlert);
+      clearAlert(globalMsg);
+      state.lastSearch = null;
+
+      resultsBody.innerHTML = `
+        <tr><td colspan="6" class="muted">กรอกเงื่อนไข แล้วกด “ค้นหา” เพื่อแสดงรายการห้องที่ว่าง</td></tr>
+      `;
+      resultCount.textContent = "ยังไม่มีผลลัพธ์";
+      setTodayDefault();
+      setStatus("พร้อมใช้งาน ✅", true);
+    });
+
+    closeModalBtn.addEventListener("click", closeModal);
+    cancelBtn.addEventListener("click", closeModal);
+
+    modalBackdrop.addEventListener("click", (e) => {
+      // click outside modal closes
+      if (e.target === modalBackdrop) closeModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modalBackdrop.style.display === "flex") closeModal();
+    });
+
+    bookingForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      confirmBooking();
+    });
+
+    // Live hint: if user changes times, clear previous results
+    [dateEl, startEl, endEl, minSeatsEl].forEach(el => {
+      el.addEventListener("change", () => {
+        clearAlert(searchAlert);
+        clearAlert(globalMsg);
+        setStatus("พร้อมค้นหา ✅", true);
+      });
+    });
+
+    // init
+    setTodayDefault();
+  </script>
+</body>
+</html>
